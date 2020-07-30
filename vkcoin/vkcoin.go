@@ -79,6 +79,59 @@ func (merchant Merchant) GetBalance(userID int) (int, error) {
 
 }
 
+// Send - передача коинов пользователю
+func (merchant Merchant) Send(toID, amount int) (bool, error) {
+	_url := "https://coin-without-bugs.vkforms.ru/merchant/send/"
+
+	data, err := jsoniter.Marshal(map[interface{}]interface{}{
+
+		"merchantId": merchant.ID,
+		"key":        merchant.Key,
+		"toId":       toID,
+		"amount":     amount * 1000,
+	})
+
+	if err != nil {
+
+		return false, err
+
+	}
+
+	resp, err := http.Post(_url, "application/json", bytes.NewBuffer(data))
+
+	if err != nil {
+
+		return false, err
+
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+
+		return false, err
+
+	}
+
+	m := map[string]interface{}{}
+
+	if err := json.Unmarshal(body, &m); err != nil {
+
+		return false, err
+
+	}
+
+	if _, ok := m["error"]; ok {
+
+		return false, err
+
+	}
+
+	return true, nil
+}
+
 func init() {
 	log.Println("VKCOIN: DEVELOPED BY BOOST BOTS ( vk.com/boostbots )")
 }
