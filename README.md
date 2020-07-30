@@ -45,3 +45,14 @@ log.Fatal(err)
 
 log.Println(balance)
 ```
+
+### GetBalance / Передача коинов пользователю
+```golang
+err := merchant.Send(1, 1000) // Перевод 1000 коинов пользователю с id=1
+
+if err != nil {
+
+log.Fatal(err)
+
+}
+```

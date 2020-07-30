@@ -80,7 +80,7 @@ func (merchant Merchant) GetBalance(userID int) (int, error) {
 }
 
 // Send - передача коинов пользователю
-func (merchant Merchant) Send(toID, amount int) (bool, error) {
+func (merchant Merchant) Send(toID, amount int) error {
 	_url := "https://coin-without-bugs.vkforms.ru/merchant/send/"
 
 	data, err := jsoniter.Marshal(map[interface{}]interface{}{
@@ -93,7 +93,7 @@ func (merchant Merchant) Send(toID, amount int) (bool, error) {
 
 	if err != nil {
 
-		return false, err
+		return err
 
 	}
 
@@ -101,7 +101,7 @@ func (merchant Merchant) Send(toID, amount int) (bool, error) {
 
 	if err != nil {
 
-		return false, err
+		return err
 
 	}
 
@@ -111,7 +111,7 @@ func (merchant Merchant) Send(toID, amount int) (bool, error) {
 
 	if err != nil {
 
-		return false, err
+		return err
 
 	}
 
@@ -119,17 +119,17 @@ func (merchant Merchant) Send(toID, amount int) (bool, error) {
 
 	if err := json.Unmarshal(body, &m); err != nil {
 
-		return false, err
+		return err
 
 	}
 
 	if _, ok := m["error"]; ok {
 
-		return false, err
+		return err
 
 	}
 
-	return true, nil
+	return nil
 }
 
 func init() {
