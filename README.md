@@ -13,7 +13,7 @@ go get -u "github.com/golangman/vkcoin/vkcoin"
 Ниже располагаются примеры использования
 
 
-### GetBalance / Получение баланса пользователя
+### Init Merchant / Инициализация платёжного сервиса
 ```golang
 package main
 
@@ -30,15 +30,18 @@ func main() {
 		Key: "access_token", // ACCESS_TOKEN аккаунта
 	}
 
-	balance, err := merchant.GetBalance(1) // 0 - id для получения баланса текущего аккаунта
+}
+```
 
-	if err != nil {
+### GetBalance / Получение баланса пользователя
+```golang
+balance, err := merchant.GetBalance(1) // 0 - id для получения баланса текущего аккаунта
 
-		log.Fatal(err)
+if err != nil {
 
-	}
-
-	log.Println(balance)
+log.Fatal(err)
 
 }
+
+log.Println(balance)
 ```
