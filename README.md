@@ -46,7 +46,7 @@ log.Fatal(err)
 log.Println(balance)
 ```
 
-### GetBalance / Передача коинов пользователю
+### Send / Передача коинов пользователю
 ```golang
 err := merchant.Send(1, 1000) // Перевод 1000 коинов пользователю с id=1
 
@@ -56,3 +56,24 @@ log.Fatal(err)
 
 }
 ```
+
+### GetTransactions / Получение списка транзакций
+```golang
+data, err := merchant.GetTransactions()
+
+	if err != nil {
+
+		log.Fatal(err)
+
+	}
+
+	log.Println(data)
+
+}
+```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
