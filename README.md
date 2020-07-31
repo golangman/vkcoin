@@ -26,8 +26,8 @@ import (
 func main() {
 
 	merchant := vkcoin.Merchant{
-		ID:  0,              // ID vkcoin аккаунта, с которого был получен токен
-		Key: "access_token", // ACCESS_TOKEN аккаунта
+		ID:  0,              // ID vkcoin аккаунта, с которого был получен access_token
+		Key: "access_token", // ACCESS_TOKEN аккаунта ( vkc )
 	}
 
 }
