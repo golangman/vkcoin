@@ -61,19 +61,26 @@ log.Fatal(err)
 ```golang
 data, err := merchant.GetTransactions()
 
-	if err != nil {
+if err != nil {
 
-		log.Fatal(err)
+	log.Fatal(err)
 
-	}
+}
 
-	log.Println(data)
+log.Println(data)
 
 }
 ```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## Contacts
+
+#### vk.com/boostbots
+#### vk.com/golangman
+#### vk.com/anetcod
+#### golangman@aol.com
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
