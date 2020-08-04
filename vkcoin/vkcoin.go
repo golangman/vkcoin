@@ -150,7 +150,7 @@ func (merchant Merchant) Send(toID, amount int) error {
 }
 
 // GetTransactions - получение списка входящих переводов
-func (merchant Merchant) GetTransactions() (interface{}, error) {
+func (merchant Merchant) GetTransactions() ([]Transaction, error) {
 	_url := "https://coin-without-bugs.vkforms.ru/merchant/tx/"
 
 	data, err := jsoniter.Marshal(map[interface{}]interface{}{

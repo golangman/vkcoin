@@ -59,7 +59,7 @@ log.Fatal(err)
 
 ### GetTransactions / Получение списка транзакций
 ```golang
-data, err := merchant.GetTransactions()
+data, err := merchant.GetTransactions() 
 
 if err != nil {
 
@@ -77,10 +77,10 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Contacts
 
+#### golangman@aol.com
 #### vk.com/boostbots
 #### vk.com/golangman
 #### vk.com/anetcod
-#### golangman@aol.com
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
