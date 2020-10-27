@@ -12,18 +12,38 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+// VkcURL - api domain
+const VkcURL = "https://coin-without-bugs.vkforms.ru/merchant/"
+
 // Merchant - модель платёжного клиента
 type Merchant struct {
 	ID  int    `json:"id"`
 	Key string `json:"key"`
 }
 
-// Answer - модель ответа vkcoin
-type Answer struct {
-	Response interface{} `json:"response"`
+// SendResponse - модель ответа vkcoin
+type SendResponse struct {
+	ID      int
+	Amount  int
+	Current int
 }
 
-// Transaction - модель транзакциb
+// GetTransactionsResponse - ...
+type GetTransactionsResponse struct {
+	Transactions []Transaction `json:"response"`
+}
+
+// GetBalanceResponse - ...
+type GetBalanceResponse struct {
+	Transactions []Transaction `json:"response"`
+}
+
+// RequestError - модель ответа vkcoin
+type RequestError struct {
+	Error VkcError `json:"error"`
+}
+
+// Transaction - модель транзакции
 type Transaction struct {
 	Amount     string `json:"amount"`
 	CreatedAt  int    `json:"created_at"`
@@ -35,9 +55,15 @@ type Transaction struct {
 	Type       int    `json:"type"`
 }
 
+// VkcError - vkc request error
+type VkcError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 // GetBalance - получение баланса пользователя по id
 func (merchant Merchant) GetBalance(userID int) (int, error) {
-	_url := "https://coin-without-bugs.vkforms.ru/merchant/score/"
+	url := VkcURL + "score/"
 
 	if userID == 0 {
 		userID = merchant.ID
@@ -56,7 +82,7 @@ func (merchant Merchant) GetBalance(userID int) (int, error) {
 
 	}
 
-	resp, err := http.Post(_url, "application/json", bytes.NewBuffer(data))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 
 	if err != nil {
 
@@ -75,7 +101,6 @@ func (merchant Merchant) GetBalance(userID int) (int, error) {
 	}
 
 	m := map[string]interface{}{}
-
 	if err := json.Unmarshal(body, &m); err != nil {
 
 		return 0, err
@@ -97,8 +122,8 @@ func (merchant Merchant) GetBalance(userID int) (int, error) {
 }
 
 // Send - передача коинов пользователю
-func (merchant Merchant) Send(toID, amount int) error {
-	_url := "https://coin-without-bugs.vkforms.ru/merchant/send/"
+func (merchant Merchant) Send(toID, amount int) (response *SendResponse, errorVkc *RequestError, err error) {
+	url := VkcURL + "send/"
 
 	data, err := jsoniter.Marshal(map[interface{}]interface{}{
 
@@ -110,15 +135,15 @@ func (merchant Merchant) Send(toID, amount int) error {
 
 	if err != nil {
 
-		return err
+		return nil, nil, err
 
 	}
 
-	resp, err := http.Post(_url, "application/json", bytes.NewBuffer(data))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 
 	if err != nil {
 
-		return err
+		return nil, nil, err
 
 	}
 
@@ -128,30 +153,31 @@ func (merchant Merchant) Send(toID, amount int) error {
 
 	if err != nil {
 
-		return err
+		return nil, nil, err
 
 	}
 
-	m := map[string]interface{}{}
+	if err := json.Unmarshal(body, &response); err != nil {
 
-	if err := json.Unmarshal(body, &m); err != nil {
-
-		return err
+		return nil, nil, err
 
 	}
 
-	if _, ok := m["error"]; ok {
+	if isEmpty(response) {
 
-		return err
-
+		err = json.Unmarshal(data, &errorVkc)
+		if err != nil {
+			return nil, nil, err
+		}
+		return nil, errorVkc, err
 	}
 
-	return nil
+	return nil, nil, nil
 }
 
 // GetTransactions - получение списка входящих переводов
-func (merchant Merchant) GetTransactions() ([]Transaction, error) {
-	_url := "https://coin-without-bugs.vkforms.ru/merchant/tx/"
+func (merchant Merchant) GetTransactions() (response *GetTransactionsResponse, errorVkc *RequestError, err error) {
+	url := VkcURL + "tx/"
 
 	data, err := jsoniter.Marshal(map[interface{}]interface{}{
 
@@ -162,56 +188,40 @@ func (merchant Merchant) GetTransactions() ([]Transaction, error) {
 
 	if err != nil {
 
-		return nil, err
+		return nil, nil, err
 
 	}
 
-	resp, err := http.Post(_url, "application/json", bytes.NewBuffer(data))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 
 	if err != nil {
-
-		return nil, err
-
+		return nil, nil, err
 	}
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	data, err = ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-
-		return nil, err
-
+		return nil, nil, err
 	}
 
-	m := map[string]interface{}{}
-
-	mResponse := []Transaction{}
-
-	if err := json.Unmarshal(body, &m); err != nil {
-
-		return nil, err
-
-	}
-
-	mResponseJSON, err := json.Marshal(m["response"])
+	err = json.Unmarshal(data, &response)
 
 	if err != nil {
-
-		return nil, err
-
+		return nil, nil, err
 	}
 
-	err = json.Unmarshal(mResponseJSON, &mResponse)
+	if isEmpty(response) {
 
-	if err != nil {
-
-		return nil, err
-
+		err = json.Unmarshal(data, &errorVkc)
+		if err != nil {
+			return nil, nil, err
+		}
+		return nil, errorVkc, err
 	}
 
-	return mResponse, nil
-
+	return response, nil, nil
 }
 
 func init() {
